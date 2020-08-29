@@ -5,6 +5,7 @@ using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -17,8 +18,8 @@ namespace Yad2_Automatic_Jump
     public class Yad2 : IDisposable
     {
         IEnumerable<string> orderIds;
-        const string username = "levkir@gmail.com";
-        const string password = "lev090779";
+        string username;
+        string password;
 
         IWebDriver driver { get; set; }        
         public string ErrorMessahe { get; set; }
@@ -27,7 +28,9 @@ namespace Yad2_Automatic_Jump
         public Yad2()
         {
             driver = new FirefoxDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            driver.Url = "https://my.yad2.co.il/login.php/";            
+            driver.Url = "https://my.yad2.co.il/login.php/";
+
+            Init();
         }
 
         public void Start(IEnumerable<string> OrderIds)
@@ -39,6 +42,20 @@ namespace Yad2_Automatic_Jump
             {
                 MyOrderPage();
                 MyPersonalAreaPage(orderId);
+            }            
+        }
+
+        private void Init()
+        {
+            try
+            {
+                username = ConfigurationManager.AppSettings.Get("Username");
+                password = ConfigurationManager.AppSettings.Get("Password");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Configuration in appSettings is empty.");
+                throw ex;
             }            
         }
 
